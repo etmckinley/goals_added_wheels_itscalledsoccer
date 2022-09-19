@@ -6,9 +6,9 @@
 
 #choose league, seasons, and minute cutoff
 
-league_select = "mlsnp"  #select only one
-seasons_select = c(2022) #can select many
-minute_limit = 500
+league_select = "nwsl"  #select only one
+seasons_select = c(2016, 2017, 2018, 2019, 2020, 2021) #can select many
+minute_limit = 750
 
 #define what the base save folder is
 save_folder = "./Figures/g+ wheels/"
@@ -138,7 +138,7 @@ colors = c("#F82D97",
            "#A510D3")
 
 #get player to test plotting
-#plot.data=value_aa %>% filter(player_id == "aDQ0Pv1WQE")
+plot.data=value_aa %>% filter(player_id == "2lqRk0vaQr")
 
 invisible(ifelse (dir.exists(paste0(
   save_folder, league_select
@@ -149,15 +149,15 @@ invisible(ifelse (dir.exists(paste0(
 save_value_aa <- function(plot.data) {
    if 
   # checks if file already exists, comment out and replace with '(TRUE){' to run for all players
-  (!file.exists(paste0(
-    save_folder ,
-    league_select,
-    "/",
-    plot.data$player.team.season[1],
-    ".png"
-  )))
-    {
-  #  (TRUE){
+  # (!file.exists(paste0(
+  #   save_folder ,
+  #   league_select,
+  #   "/",
+  #   plot.data$player.team.season[1],
+  #   ".png"
+  # )))
+  #   {
+    (TRUE){
     
     font = "Bebas Neue"
     
@@ -638,7 +638,8 @@ save_value_aa <- function(plot.data) {
       draw_plot(p) +
       draw_image(
         paste0(
-          "https://app.americansocceranalysis.com/club_logos/",
+          #"https://app.americansocceranalysis.com/club_logos/",
+          "https://american-soccer-analysis-headshots.s3.amazonaws.com/club_logos/",
           plot.data$team_id[1],
           ".png"
         ),
