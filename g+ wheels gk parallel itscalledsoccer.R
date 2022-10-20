@@ -33,8 +33,8 @@ library(itscalledsoccer)
 
 min.limit = -0.07
 max.limit = 0.07
-lower.limit = -0.12
-upper.limit = .183
+lower.limit = -0.15
+upper.limit = .2
 
 
 asa_client <- AmericanSoccerAnalysis$new()
@@ -43,7 +43,7 @@ players = asa_client$get_players()
 
 teams = asa_client$get_teams()
 
-value_aa = asa_client$get_player_goals_added(
+value_aa = asa_client$get_goalkeeper_goals_added(
   leagues = league_select,
   minimum_minutes = minute_limit,
   split_by_team = TRUE,
@@ -64,15 +64,7 @@ value_aa = asa_client$get_player_goals_added(
     Season = season_name
   ) %>%
   mutate(
-    Position = case_when(
-      str_detect(general_position, "FB") ~ "Fullback",
-      str_detect(general_position, "AM") ~ "Attacking Midfielder",
-      str_detect(general_position, "CM") ~ "Central Midfielder",
-      str_detect(general_position, "DM") ~ "Defensive Midfielder",
-      str_detect(general_position, "ST") ~ "Striker",
-      str_detect(general_position, "W") ~ "Winger",
-      str_detect(general_position, "CB") ~ "Centerback"
-    ),
+    Position =  "Goalkeeper",
     value.bar = ifelse(
       value > max.limit,
       max.limit,
@@ -85,20 +77,14 @@ value_aa = asa_client$get_player_goals_added(
   ungroup()
 
 icons = data.frame(
-  action = c(
-    "Receiving",
-    "Passing",
-    "Dribbling",
-    "Interrupting",
-    "Fouling",
-    "Shooting"
-  ),
+  action = c("Claiming", "Passing", "Fielding", "Sweeping", "Handling", 
+             "Shotstopping"),
   image = c(
-    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/receiving.png",
+    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/claiming.png",
     "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/passing.png",
-    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/dribbling.png",
-    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/interrupting.png",
-    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/fouls.png",
+    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/fielding.png",
+    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/sweeping.png",
+    "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/handling.png",
     "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/shooting.png"
   )
 )
@@ -122,12 +108,12 @@ league_logo = data.frame(
 value_aa$action = factor(
   value_aa$action,
   levels = c(
-    "Receiving",
+    "Claiming",
     "Passing",
-    "Dribbling",
-    "Interrupting",
-    "Fouling",
-    "Shooting"
+    "Fielding",
+    "Handling",
+    "Sweeping",
+    "Shotstopping"
   )
 )
 
@@ -139,7 +125,7 @@ colors = c("#F82D97",
            "#A510D3")
 
 #get player to test plotting
-plot.data=value_aa %>% filter(player_id == "gjMN6wzjMK")
+plot.data=value_aa %>% filter(player_id == "eVq3ja3g5W")
 
 invisible(ifelse (dir.exists(paste0(
   save_folder, league_select
@@ -260,7 +246,7 @@ save_value_aa <- function(plot.data) {
         "text",
         label = paste(
           formatC(
-            round(plot.data$value[plot.data$action == "Receiving"],
+            round(plot.data$value[plot.data$action == "Claiming"],
                   digits = 2),
             digits = 2,
             format = "f",
@@ -276,11 +262,11 @@ save_value_aa <- function(plot.data) {
         hjust = 0,
         vjust = 0,
         family = font,
-        #fontface = "bold"
+        fontface = "bold"
       ) +
       annotate(
         "text",
-        label = paste("                  Receiving"),
+        label = paste("                  Claiming"),
         x = 1.16,
         y = max.limit + 0.053,
         size = 4,
@@ -309,7 +295,7 @@ save_value_aa <- function(plot.data) {
         hjust = 0,
         vjust = 0,
         family = font,
-        #fontface = "bold"
+        fontface = "bold"
       ) +
       annotate(
         "text",
@@ -326,7 +312,7 @@ save_value_aa <- function(plot.data) {
         "text",
         label = paste(
           formatC(
-            round(plot.data$value[plot.data$action == "Dribbling"],
+            round(plot.data$value[plot.data$action == "Fielding"],
                   digits = 2),
             digits = 2,
             format = "f",
@@ -342,11 +328,11 @@ save_value_aa <- function(plot.data) {
         hjust = 0,
         vjust = 0,
         family = font,
-        #fontface = "bold"
+        fontface = "bold"
       ) +
       annotate(
         "text",
-        label = paste("                  Dribbling"),
+        label = paste("                  Fielding"),
         x = 2.9,
         y = max.limit + 0.072,
         size = 4,
@@ -359,7 +345,7 @@ save_value_aa <- function(plot.data) {
         "text",
         label = paste(
           formatC(
-            round(plot.data$value[plot.data$action == "Interrupting"],
+            round(plot.data$value[plot.data$action == "Handling"],
                   digits = 2),
             digits = 2,
             format = "f",
@@ -375,11 +361,11 @@ save_value_aa <- function(plot.data) {
         hjust = 1,
         vjust = 0,
         family = font,
-        #fontface = "bold"
+        fontface = "bold"
       ) +
       annotate(
         "text",
-        label = paste("Interrupting                   "),
+        label = paste("Handling                 "),
         x = 4.08,
         y = max.limit + 0.068,
         size = 4,
@@ -392,7 +378,7 @@ save_value_aa <- function(plot.data) {
         "text",
         label = paste(
           formatC(
-            round(plot.data$value[plot.data$action == "Fouling"],
+            round(plot.data$value[plot.data$action == "Sweeping"],
                   digits = 2),
             digits = 2,
             format = "f",
@@ -405,19 +391,19 @@ save_value_aa <- function(plot.data) {
         y = max.limit + 0.075,
         size = 5.5,
         color = "white",
-        hjust = 1,
+        hjust = 0.7,
         vjust = 1,
         family = font,
-        #fontface = "bold"
+        fontface = "bold"
       ) +
       annotate(
         "text",
-        label = paste("Fouling                  "),
+        label = paste("Sweeping                 "),
         x = 5.01,
         y = max.limit + 0.076,
         size = 4,
         color = "white",
-        hjust = 1,
+        hjust = 0.9,
         vjust = 1,
         family = font
       ) +
@@ -425,7 +411,7 @@ save_value_aa <- function(plot.data) {
         "text",
         label = paste(
           formatC(
-            round(plot.data$value[plot.data$action == "Shooting"],
+            round(plot.data$value[plot.data$action == "Shotstopping"],
                   digits = 2),
             digits = 2,
             format = "f",
@@ -441,11 +427,11 @@ save_value_aa <- function(plot.data) {
         hjust = 1,
         vjust = 1,
         family = font,
-        #fontface = "bold"
+        fontface = "bold"
       ) +
       annotate(
         "text",
-        label = paste("Shooting                    "),
+        label = paste("Shotstopping                  "),
         x = 5.9,
         y = max.limit + 0.06,
         size = 4,
@@ -489,16 +475,19 @@ save_value_aa <- function(plot.data) {
         vjust = 0,
         family = font
       ) +
-      #add icos
-      geom_image(
-        data = icons,
-        aes(
-          x = action,
-          y = max.limit + 0.04,
-          image = image
-        ),
-        size = 0.08,
-      ) +
+      #add icons
+      geom_image(data = icons,
+                 aes(
+                   x = action,
+                   y = max.limit + 0.04,
+                   image = case_when(
+                     action == "Shotstopping" & pull(filter(plot.data, action == "Shotstopping"), value.bar) == min.limit ~ "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/swiss-cheese.png",
+                     action == "Shotstopping" & pull(filter(plot.data, action == "Shotstopping"), value.bar) == max.limit ~ "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/brick-wall.png",
+                     action == "Shotstopping" ~  "https://raw.githubusercontent.com/etmckinley/goals_added_wheels/main/do-not-enter.png",
+                     TRUE ~ image
+                   )
+                 ),
+                 size = 0.08) +
       #to polar coordinates
       coord_polar(start = 0,
                   direction = 1) +
@@ -506,34 +495,34 @@ save_value_aa <- function(plot.data) {
       scale_fill_manual(
         values =
           c(
-            "Receiving" = "#F82D97",
+            "Claiming" = "#F82D97",
             "Passing" = "#FF6A62",
-            "Dribbling" = "#F8FF01",
-            "Interrupting" = "#2EF8A0",
-            "Fouling" = "#01C4E7",
-            "Shooting" = "#A510D3"
+            "Fielding" = "#F8FF01",
+            "Handling" = "#2EF8A0",
+            "Sweeping" = "#01C4E7",
+            "Shotstopping" = "#A510D3"
           )
       ) +
       scale_color_manual(
         values =
           c(
-            "Receiving" = "#F82D97",
+            "Claiming" = "#F82D97",
             "Passing" = "#FF6A62",
-            "Dribbling" = "#F8FF01",
-            "Interrupting" = "#2EF8A0",
-            "Fouling" = "#01C4E7",
-            "Shooting" = "#A510D3"
+            "Fielding" = "#F8FF01",
+            "Handling" = "#2EF8A0",
+            "Sweeping" = "#01C4E7",
+            "Shotstopping" = "#A510D3"
           )
       ) +
       scale_pattern_color_manual(
         values =
           c(
-            "Receiving" = "#F82D97",
+            "Claiming" = "#F82D97",
             "Passing" = "#FF6A62",
-            "Dribbling" = "#F8FF01",
-            "Interrupting" = "#2EF8A0",
-            "Fouling" = "#01C4E7",
-            "Shooting" = "#A510D3"
+            "Fielding" = "#F8FF01",
+            "Handling" = "#2EF8A0",
+            "Sweeping" = "#01C4E7",
+            "Shotstopping" = "#A510D3"
           )
       ) +
       #scale y axis
@@ -575,6 +564,19 @@ save_value_aa <- function(plot.data) {
     #set seed for beeswarm
     set.seed(42)
     #plot beeswarm only for players with at least 1000 minutes, so if a player is below 1000 mins they will not have a dot on the swarm
+    lower_bee_limit = value_aa %>%
+      filter(
+        Position == plot.data$Position[1],
+        Season == plot.data$Season[1],
+        Min > 1000
+      ) |> pull(Value_AA) |> min()
+    upper_bee_limit = value_aa %>%
+      filter(
+        Position == plot.data$Position[1],
+        Season == plot.data$Season[1],
+        Min > 1000
+      ) |> pull(Value_AA) |> max()
+    
     bees = ggplot(
       value_aa %>%
         filter(
@@ -613,8 +615,8 @@ save_value_aa <- function(plot.data) {
                              21)) +
       #scale to max and min limits for value_aa per 96
       scale_y_continuous(limits =
-                           c(-0.2,
-                             .31)) +
+                           c(lower_bee_limit,
+                             upper_bee_limit)) +
       #fix themes
       theme_minimal_vgrid() +
       theme(
